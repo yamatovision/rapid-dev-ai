@@ -8,20 +8,23 @@ import { DevelopmentProcess } from '@/components/DevelopmentProcess'
 import { Contact } from '@/components/Contact'
 import { RiskComparison } from '@/components/RiskComparison'
 import { FloatingCTA } from '@/components/common/FloatingCTA'
+import { AIDevelopmentProof } from '@/components/AIDevelopmentProof'
+import { QualityAssurance } from '@/components/QualityAssurance'
 
 export default function Home() {
   return (
     <main>
       <Hero />
+      <AIDevelopmentProof />
       <Problems />
       <Features />
-        <Advantages />
+      <Advantages />
       <CaseStudy />
+      <QualityAssurance />
       <DevelopmentProcess />
       <RiskComparison /> 
       <Contact />
-      <FloatingCTA /> {/* 追加 */}
-
+      <FloatingCTA />
       <Footer />
     </main>
   )
