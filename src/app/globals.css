@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  
+  /* 新しい変数の追加 */
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --secondary: #1e293b;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: white;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* 追加のユーティリティクラス */
+@layer utilities {
+  .text-gradient {
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(to right, var(--primary), var(--primary-dark));
+  }
+}
+
+/* アニメーション関連のスタイル */
+@layer components {
+  .hero-gradient {
+    background: linear-gradient(
+      180deg,
+      var(--secondary) 0%,
+      rgba(15, 23, 42, 0.9) 100%
+    );
+  }
+  
+  .hover-card {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+}
