@@ -1,42 +1,8 @@
 'use client'
 import { motion } from 'framer-motion'
 import { AnimatedCounter } from '@/components/common/AnimatedCounter'
-import { useEffect, useRef } from 'react'
 
 export const Hero = () => {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const videoUrl = '/demo3.mov'
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (video) {
-      video.src = videoUrl
-      
-      console.log('Video initial state:', {
-        readyState: video.readyState,
-        networkState: video.networkState,
-        src: video.src,
-        paused: video.paused
-      })
-
-      video.onerror = () => {
-        console.error('Video error:', {
-          error: video.error,
-          src: video.src,
-          networkState: video.networkState
-        })
-      }
-
-      video.onloadstart = () => {
-        console.log('Video loading started')
-      }
-
-      video.onloadedmetadata = () => {
-        console.log('Video metadata loaded')
-      }
-    }
-  }, [videoUrl])
-
   const achievements = [
     {
       number: 16,
@@ -71,7 +37,8 @@ export const Hero = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
             相談無料・設計無料
               <span className="block text-orange-500 mt-2">
-              まずは &quot;できるか確認&quot;から始められるAI開発            </span>
+              まずは &quot;できるか確認&quot;から始められるAI開発            
+              </span>
             </h1>
 
             <div className="grid grid-cols-3 gap-6 my-12">
@@ -83,8 +50,7 @@ export const Hero = () => {
                   transition={{ delay: index * 0.2 }}
                   className="bg-gray-800/50 p-6 rounded-lg text-center"
                 >
-                  <div className="text-3xl font-bold text-orange-500">
-                    <AnimatedCounter
+                  <div className="text-3xl font-bold text-orange-500"><AnimatedCounter
                       from={0}
                       to={achievement.number}
                       suffix={achievement.suffix}
@@ -112,7 +78,7 @@ export const Hero = () => {
             </div>
           </motion.div>
 
-          {/* 右側：動画表示 */}
+          {/* 右側：Vimeo動画 */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -120,18 +86,13 @@ export const Hero = () => {
             className="relative w-full aspect-[16/9]"
           >
             <div className="relative w-full h-full rounded-lg overflow-hidden">
-              <video
-                ref={videoRef}
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls
-                className="absolute top-0 left-0 w-full h-full object-cover rounded-lg"
-              >
-                <source src="/demo3.mov" type="video/quicktime" />
-                Your browser does not support the video tag.
-              </video>
+              <iframe
+                src="https://player.vimeo.com/video/1055189317?badge=0&autopause=0&autoplay=1&loop=1&muted=1&background=1"
+                className="absolute top-0 left-0 w-full h-full rounded-lg"
+                frameBorder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                title="AI開発デモ"
+              />
               {/* オーバーレイ効果 */}
               <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-40" />
             </div>
