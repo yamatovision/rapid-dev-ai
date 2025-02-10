@@ -8,7 +8,6 @@ import { DevelopmentProcess } from '@/components/DevelopmentProcess'
 import { Contact } from '@/components/Contact'
 import { RiskComparison } from '@/components/RiskComparison'
 import { FloatingCTA } from '@/components/common/FloatingCTA'
-import { DevelopmentComparison } from '@/components/DevelopmentComparison'
 
 export default function Home() {
   return (
@@ -16,9 +15,7 @@ export default function Home() {
       <Hero />
       <Problems />
       <Features />
-  
-
-      <Advantages />
+        <Advantages />
       <CaseStudy />
       <DevelopmentProcess />
       <RiskComparison /> 

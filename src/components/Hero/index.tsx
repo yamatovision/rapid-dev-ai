@@ -10,7 +10,6 @@ export const Hero = () => {
   useEffect(() => {
     const video = videoRef.current
     if (video) {
-      // 動画のソースを直接設定
       video.src = videoUrl
       
       console.log('Video initial state:', {
@@ -20,7 +19,6 @@ export const Hero = () => {
         paused: video.paused
       })
 
-      // 読み込みエラーのハンドリング
       video.onerror = () => {
         console.error('Video error:', {
           error: video.error,
@@ -29,12 +27,10 @@ export const Hero = () => {
         })
       }
 
-      // 読み込み開始のハンドリング
       video.onloadstart = () => {
         console.log('Video loading started')
       }
 
-      // メタデータ読み込み完了のハンドリング
       video.onloadedmetadata = () => {
         console.log('Video metadata loaded')
       }
@@ -75,7 +71,7 @@ export const Hero = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
             相談無料・設計無料
               <span className="block text-orange-500 mt-2">
-              まずは "できるか確認"から始められるAI開発            </span>
+              まずは &quot;できるか確認&quot;から始められるAI開発            </span>
             </h1>
 
             <div className="grid grid-cols-3 gap-6 my-12">

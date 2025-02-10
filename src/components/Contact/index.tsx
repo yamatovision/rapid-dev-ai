@@ -2,12 +2,14 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 
+type TabType = 'form' | 'diagnosis' | 'download'
+
 export const Contact = () => {
-  const [activeTab, setActiveTab] = useState<'form' | 'diagnosis' | 'download'>('form')
+  const [activeTab, setActiveTab] = useState<TabType>('form')
 
   const contactOptions = [
     {
-      id: 'form',
+      id: 'form' as TabType,
       title: '無料相談フォーム',
       description: '具体的なご相談をお受けします',
       icon: (
@@ -17,7 +19,7 @@ export const Contact = () => {
       )
     },
     {
-      id: 'diagnosis',
+      id: 'diagnosis' as TabType,
       title: 'AI活用診断',
       description: '可能性を簡単診断',
       icon: (
@@ -27,7 +29,7 @@ export const Contact = () => {
       )
     },
     {
-      id: 'download',
+      id: 'download' as TabType,
       title: '資料ダウンロード',
       description: '詳細資料をご確認',
       icon: (
@@ -168,7 +170,8 @@ export const Contact = () => {
             {contactOptions.map((option) => (
               <button
                 key={option.id}
-                onClick={() => setActiveTab(option.id as any)}
+                onClick={() => setActiveTab(option.id as TabType)}
+
                 className={`flex-1 p-4 rounded-lg border-2 transition-all ${
                   activeTab === option.id
                     ? 'border-orange-500 bg-gray-800'
