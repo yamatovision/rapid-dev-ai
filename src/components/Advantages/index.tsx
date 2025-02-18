@@ -31,8 +31,8 @@ export const Advantages = () => {
                 </tr>
                 <tr className="border-b bg-gray-50">
                   <td className="p-4 font-bold">開発コスト</td>
-                  <td className="p-4">1500-2000万円</td>
-                  <td className="p-4 text-orange-500 font-bold">300-500万円</td>
+                  <td className="p-4">700万円-5000万円</td>
+                  <td className="p-4 text-orange-500 font-bold">100万円-700万円</td>
                 </tr>
                 <tr className="border-b">
                   <td className="p-4 font-bold">AI機能</td>

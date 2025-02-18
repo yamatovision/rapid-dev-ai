@@ -10,6 +10,11 @@ import { RiskComparison } from '@/components/RiskComparison'
 import { FloatingCTA } from '@/components/common/FloatingCTA'
 import { AIDevelopmentProof } from '@/components/AIDevelopmentProof'
 import { QualityAssurance } from '@/components/QualityAssurance'
+import { Vision } from '@/components/Vision'
+
+
+import { ProcessAnimation } from '@/components/ProcessAnimation'
+
 
 export default function Home() {
   return (
@@ -23,6 +28,8 @@ export default function Home() {
       <QualityAssurance />
       <DevelopmentProcess />
       <RiskComparison /> 
+      <Vision /> 
+      <ProcessAnimation /> 
       <Contact />
       <FloatingCTA />
       <Footer />
