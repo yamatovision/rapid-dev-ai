@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -17,24 +16,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className={inter.className}>
-        {children}
-        <Script src="https://unpkg.com/react@18/umd/react.production.min.js" />
-        <Script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" />
-        <Script src="http://localhost:5174/dist/widget.umd.js" />
-        <Script id="ai-chat-widget-init">
-          {`
-            window.addEventListener('load', function() {
-              if (window.AIChatWidget) {
-                window.AIChatWidget.init({
-                  clientId: 'YOUR_CLIENT_ID',
-                  theme: 'light'
-                });
-              }
-            });
-          `}
-        </Script>
-      </body>
+      <head>
+        <meta name="emotion-insertion-point" content="" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        />
+      </head>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }

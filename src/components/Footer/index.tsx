@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { useWidgetLoader } from '@/hooks/useWidgetLoader'
 
 const footerMenus = {
   サービス: [
@@ -33,6 +34,12 @@ const companyInfo = {
 }
 
 export const Footer = () => {
+  const { isWidgetLoading, loadWidget } = useWidgetLoader()
+
+  const handleConsultationClick = async () => {
+    await loadWidget()
+  }
+
   return (
     <footer className="bg-gray-900 text-white py-12">
       <div className="container mx-auto px-4">
@@ -74,12 +81,15 @@ export const Footer = () => {
             <p className="text-gray-400 mb-4">
               AI開発に関するご相談は、お気軽にお問い合わせください。
             </p>
-            <Link
-              href="/#contact"
-              className="inline-block bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-colors"
+            <button
+              className={`inline-block bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-colors ${
+                isWidgetLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              onClick={handleConsultationClick}
+              disabled={isWidgetLoading}
             >
-              無料相談する
-            </Link>
+              {isWidgetLoading ? '読み込み中...' : '無料相談する'}
+            </button>
           </div>
         </div>
 

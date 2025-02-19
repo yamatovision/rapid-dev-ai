@@ -13,26 +13,47 @@ export const Hero = () => {
       number: 6,
       suffix: "分の1",
       label: "開発期間",
-      sublabel: "従来比で大幅短縮"
+      sublabel: "専門家採用なしで"
     },
     {
       number: 70,
       suffix: "%",
       label: "コスト削減",
-      sublabel: "従来比での削減率"
+      sublabel: "追加人員なしで"
     },
     {
       number: 8,
       suffix: "桁",
       label: "売上実績",
-      sublabel: "初月から達成"
+      sublabel: "既存スタッフだけで"
     }
   ]
+
+
+
 
   const handleConsultationClick = async () => {
     if (isWidgetLoading) return;
     setIsWidgetLoading(true);
-
+  
+    const loadScript = (src: string) => new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = false;  // 重要：非同期読み込みを無効化
+      script.defer = true;   // 追加：実行順序を保証
+      script.onload = () => {
+        console.log(`Loaded: ${src}`);
+        if (typeof window !== 'undefined') {
+          console.log('MaterialUI available:', typeof window.MaterialUI !== 'undefined');
+          console.log('emotionReact available:', typeof window.emotionReact !== 'undefined');
+          console.log('emotionStyled available:', typeof window.emotionStyled !== 'undefined');
+        }
+        resolve();
+      };
+      script.onerror = (e) => reject(e);
+      document.head.appendChild(script);  // bodyではなくheadに追加
+    });
+  
     try {
       // 依存関係を順番に読み込み
       const dependencies = [
@@ -42,44 +63,37 @@ export const Hero = () => {
         'https://unpkg.com/@emotion/react@11.11.3/dist/emotion-react.umd.min.js',
         'https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js'
       ];
-
+  
       for (const src of dependencies) {
-        await new Promise<void>((resolve, reject) => {
-          const script = document.createElement('script');
-          script.src = src;
-          script.async = true;
-          script.onload = () => resolve();
-          script.onerror = (e) => reject(e);
-          document.body.appendChild(script);
-        });
+        await loadScript(src);
       }
-
-      // ウィジェットスクリプトを読み込み
-      await new Promise<void>((resolve, reject) => {
-        const widgetScript = document.createElement('script');
-        widgetScript.src = process.env.NEXT_PUBLIC_WIDGET_URL || 'http://localhost:5174/dist/index.umd.js';
-        widgetScript.async = true;
-        widgetScript.onload = () => {
-          console.log('Widget script loaded');
-          resolve();
-        };
-        widgetScript.onerror = (error) => {
-          console.error('Widget script failed to load:', error);
-          reject(error);
-        };
-        document.body.appendChild(widgetScript);
-      });
-
-      // スクリプト読み込み完了後、直接モーダルを初期化
+  
+      // グローバルオブジェクトの確認
+      console.log('Global MUI object:', Object.keys(window).filter(key => 
+        key.includes('Mui') || key.includes('material') || key.includes('Material')
+      ));
+      console.log('Global Emotion object:', Object.keys(window).filter(key => 
+        key.includes('emotion') || key.includes('Emotion')
+      ));
+  
+      // ウィジェットの読み込み
+      await loadScript(process.env.NEXT_PUBLIC_WIDGET_URL || 'http://localhost:5174/dist/index.umd.js');
+      console.log('Widget script loaded, AIChatWidget object:', window.AIChatWidget);
+  
+      // 設定とウィジェットの初期化
+      const config = {
+        clientId: process.env.NEXT_PUBLIC_WIDGET_CLIENT_ID || 'YOUR_CLIENT_ID',
+        theme: {
+          primary: '#ff502b'
+        },
+        displayMode: 'modal',
+        container: `ai-chat-widget-container-${Math.random().toString(36).substr(2, 9)}`
+      };
+      console.log('Initializing widget with config:', config);
+  
       if (window.AIChatWidget) {
-        window.AIChatWidget.init({
-          clientId: process.env.NEXT_PUBLIC_WIDGET_CLIENT_ID || 'YOUR_CLIENT_ID',
-          theme: {
-            primary: '#ff502b'
-          },
-          displayMode: 'modal',
-          container: `ai-chat-widget-container-${Math.random().toString(36).substr(2, 9)}`
-        });
+        window.AIChatWidget.init(config);
+        console.log('Widget initialized');
       }
     } catch (error) {
       console.error('Failed to load widget:', error);
@@ -87,7 +101,12 @@ export const Hero = () => {
       setIsWidgetLoading(false);
     }
   };
+  
 
+
+
+
+  
   const handleCaseStudyClick = () => {
     scrollToElement('contact-section', { offset: 100 })
     window.dispatchEvent(new CustomEvent('switchContactTab', { 
@@ -115,7 +134,8 @@ export const Hero = () => {
               </span>
             </h1>
             <p className="text-xl text-gray-300 mb-8">
-              「時間とコストの制約を、AIの力で解決する」
+              「社内にエンジニアがいない中小企業でも、
+              AIの力で大手に負けない競争力を手に入れられます」
             </p>
 
             <div className="grid grid-cols-3 gap-6 my-12">
@@ -127,6 +147,8 @@ export const Hero = () => {
                   transition={{ delay: index * 0.2 }}
                   className="bg-gray-800/50 p-6 rounded-lg text-center"
                 >
+                                    <div className="text-xs text-orange-400 mt-1">{achievement.sublabel}</div>
+
                   <div className="text-3xl font-bold text-orange-500">
                     <AnimatedCounter
                       from={0}
@@ -135,7 +157,6 @@ export const Hero = () => {
                     />
                   </div>
                   <div className="text-sm text-gray-300">{achievement.label}</div>
-                  <div className="text-xs text-orange-400 mt-1">{achievement.sublabel}</div>
                 </motion.div>
               ))}
             </div>
@@ -154,7 +175,7 @@ export const Hero = () => {
                 className="bg-gray-700 hover:bg-gray-600 px-8 py-4 rounded-lg font-bold"
                 onClick={handleCaseStudyClick}
               >
-                開発事例を見る
+                AIとチャットで相談する
               </motion.button>
             </div>
           </motion.div>
@@ -222,11 +243,11 @@ export const Hero = () => {
                   <ul className="mt-2 space-y-2 text-sm text-gray-300">
                     <li className="flex items-center">
                       <span className="text-orange-500 mr-2">①</span>
-                      収益改善ポイントの具体的分析
+                      御社の業務のムダを可視化する無料診断
                     </li>
                     <li className="flex items-center">
                       <span className="text-orange-500 mr-2">②</span>
-                      システム導入による利益向上シミュレーション
+                      AIDX化とシステム導入による利益向上シミュレーション
                     </li>
                     <li className="flex items-center">
                       <span className="text-orange-500 mr-2">③</span>
@@ -234,7 +255,7 @@ export const Hero = () => {
                     </li>
                   </ul>
                   <div className="mt-4 text-sm text-gray-400 italic">
-                    ※ 上の動画は実際のヒアリングからモックアップ作成までの流れをご紹介しています
+                    ※ 上の動画はヒアリングからその場でモックアップ作成の様子です
                   </div>
                 </div>
               </div>
@@ -247,20 +268,22 @@ export const Hero = () => {
 }
 
 // TypeScript の型定義
-declare global {
-  interface Window {
-    AIChatWidget: {
-      init: (config: {
-        clientId: string
-        theme: {
-          primary: string
-        }
-        displayMode: string
-        container: string
-        hideChat?: boolean
-      }) => void
+  declare global {
+    interface Window {
+      MaterialUI: any;
+      emotionReact: any;
+      emotionStyled: any;
+      AIChatWidget: {
+        init: (config: {
+          clientId: string;
+          theme: {
+            primary: string;
+          };
+          displayMode: string;
+          container: string;
+        }) => void;
+      };
     }
   }
-}
 
 export default Hero
