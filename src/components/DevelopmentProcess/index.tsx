@@ -1,6 +1,8 @@
 'use client'
 import { motion } from 'framer-motion'
-import { useWidgetLoader } from '@/hooks/useWidgetLoader'
+import { useState,useEffect } from 'react'  // useStateを追加
+
+
 
 // 比較表のデータ
 const comparisonData = [
@@ -56,12 +58,21 @@ const faqs = [
   }
 ]
 export const DevelopmentProcess = () => {
-  const { isWidgetLoading, loadWidget } = useWidgetLoader()
-  
-  const handleConsultationClick = async () => {
-    await loadWidget()
+  const [showWidget, setShowWidget] = useState(false)
+  const handleConsultationClick = () => {
+    setShowWidget(true)
   }
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'WIDGET_TOGGLE') {
+        setShowWidget(event.data.payload.visible);
+      }
+    };
 
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+  
   const processes = [
     {
       step: "Step 1",
@@ -108,7 +119,29 @@ export const DevelopmentProcess = () => {
   ]
 
   return (
-    <section className="py-20 bg-gray-900 text-white">
+    <>
+      {showWidget && (
+        <iframe
+          src="https://aibookingbot-widget.web.app"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            border: 'none',
+            width: '720px',
+            height: '540px',
+            maxWidth: '90vw',
+            maxHeight: '90vh',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            zIndex: 9999
+          }}
+          allow="microphone"
+          title="AI Chat Widget"
+        />
+      )}
+      <section className="py-20 bg-gray-900 text-white">
       <div className="container mx-auto px-4">
         {/* 開発プロセスセクション */}
         <motion.div
@@ -312,14 +345,11 @@ export const DevelopmentProcess = () => {
               まずは無料相談で、あなたの企業に最適なAI導入プランをご提案します
             </p>
             <button
-              className={`bg-white text-orange-500 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all ${
-                isWidgetLoading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-              onClick={handleConsultationClick}
-              disabled={isWidgetLoading}
-            >
-              {isWidgetLoading ? '読み込み中...' : '無料相談を予約する'}
-            </button>
+      className="bg-white text-orange-500 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all"
+      onClick={handleConsultationClick}
+    >
+      無料相談を予約する
+    </button>
             <p className="text-sm mt-4 text-orange-100">
               ※ 相談は何回でも無料です
             </p>
@@ -327,6 +357,8 @@ export const DevelopmentProcess = () => {
         </motion.div>
       </div>
     </section>
+    </>
+
   )
 }
 

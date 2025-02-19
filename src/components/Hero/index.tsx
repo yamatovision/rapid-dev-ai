@@ -1,12 +1,42 @@
 'use client'
 import { motion } from 'framer-motion'
 import { AnimatedCounter } from '@/components/common/AnimatedCounter'
-import { useScrollToElement } from '@/hooks/useScrollToElement'
-import { useState } from 'react' // useEffectを削除
-
+import { useState, useEffect } from 'react' // useEffectを追加
+interface WidgetMessage {
+  type: 'WIDGET_TOGGLE' | 'WIDGET_READY' | 'CHAT_MESSAGE' | 'RESERVATION_SUBMIT';
+  payload: {
+    visible?: boolean;
+    ready?: boolean;
+    message?: string;
+  };
+}
 export const Hero = () => {
-  const scrollToElement = useScrollToElement()
-  const [isWidgetLoading, setIsWidgetLoading] = useState(false)
+  const [showWidget, setShowWidget] = useState(false);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'WIDGET_TOGGLE') {
+        setShowWidget(event.data.payload.visible);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  useEffect(() => {
+    // イベントの型を定義
+    const handleMessage = (event: MessageEvent) => {
+      const data = event.data as WidgetMessage;
+      
+      if (data?.type === 'WIDGET_TOGGLE' && data.payload?.visible !== undefined) {
+        setShowWidget(data.payload.visible);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
   
   const achievements = [
     {
@@ -29,65 +59,11 @@ export const Hero = () => {
     }
   ]
 
-  const handleConsultationClick = async () => {
-    if (isWidgetLoading) return;
-    setIsWidgetLoading(true);
-    
-    const loadScript = (src: string) => new Promise<void>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = src;
-      script.async = false;
-      script.defer = true;
-      script.onload = () => resolve();
-      script.onerror = (e) => reject(e);
-      document.head.appendChild(script);
-    });
-  
-    try {
-      // 依存関係を順番に読み込み
-      const dependencies = [
-        'https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js',
-        'https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js',
-        'https://cdn.jsdelivr.net/npm/@mui/material@5.15.14/umd/material-ui.production.min.js',
-        'https://cdn.jsdelivr.net/npm/@emotion/react@11.11.3/dist/emotion-react.umd.min.js',
-        'https://cdn.jsdelivr.net/npm/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js'
-      ];
-  
-      for (const src of dependencies) {
-        await loadScript(src);
-      }
-  
-      // 環境に応じたウィジェットURLの設定
-      const widgetUrl = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:5174/dist/index.umd.js'
-        : 'https://aibookingbot-widget.web.app/index.umd.js';
-  
-      await loadScript(widgetUrl);
-  
-      if (window.AIChatWidget) {
-        window.AIChatWidget.init({
-          clientId: process.env.NEXT_PUBLIC_WIDGET_CLIENT_ID || 'YOUR_CLIENT_ID',
-          theme: {
-            primary: '#ff502b'
-          },
-          displayMode: 'modal',
-          container: `ai-chat-widget-container-${Math.random().toString(36).substr(2, 9)}`
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load widget:', error);
-    } finally {
-      setIsWidgetLoading(false);
-    }
+  const handleConsultationClick = () => {
+    setShowWidget(true);
   };
-  
 
-
-
-
-  
   const handleCaseStudyClick = () => {
-    scrollToElement('contact-section', { offset: 100 })
     window.dispatchEvent(new CustomEvent('switchContactTab', { 
       detail: {
         tab: 'document',
@@ -97,67 +73,101 @@ export const Hero = () => {
   }
 
   return (
-    <section className="relative bg-gradient-to-b from-gray-900 to-gray-800 text-white py-20">
-      <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* 左側：テキストコンテンツ */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              30日で、
-              <span className="block text-orange-500 mt-2">
-                あなたのビジネスの収益性を改善するAIシステムを提供します
-              </span>
-            </h1>
-            <p className="text-xl text-gray-300 mb-8">
-              「社内にエンジニアがいない中小企業でも、
-              AIの力で大手に負けない競争力を手に入れられます」
-            </p>
+    <>
+{showWidget && (
+  <iframe
+    src="https://aibookingbot-widget.web.app"  // modal=true を削除
+    style={{
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      border: 'none',
+      width: '720px',
+      height: '540px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      borderRadius: '12px',
+      overflow: 'hidden',
+      zIndex: 9999
+    }}
+    allow="microphone"
+    title="AI Chat Widget"
+  />
+)}
 
-            <div className="grid grid-cols-3 gap-6 my-12">
-              {achievements.map((achievement, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.2 }}
-                  className="bg-gray-800/50 p-6 rounded-lg text-center"
+
+
+
+
+
+
+
+
+
+      <section className="relative bg-gradient-to-b from-gray-900 to-gray-800 text-white py-20">
+        {/* 既存のセクションコンテンツ */}
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* 左側：テキストコンテンツ */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                30日で、
+                <span className="block text-orange-500 mt-2">
+                  あなたのビジネスの収益性を改善するAIシステムを提供します
+                </span>
+              </h1>
+              <p className="text-xl text-gray-300 mb-8">
+                「社内にエンジニアがいない中小企業でも、
+                AIの力で大手に負けない競争力を手に入れられます」
+              </p>
+
+              <div className="grid grid-cols-3 gap-6 my-12">
+                {achievements.map((achievement, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.2 }}
+                    className="bg-gray-800/50 p-6 rounded-lg text-center"
+                  >
+                    <div className="text-xs text-orange-400 mt-1">{achievement.sublabel}</div>
+                    <div className="text-3xl font-bold text-orange-500">
+                      <AnimatedCounter
+                        from={0}
+                        to={achievement.number}
+                        suffix={achievement.suffix}
+                      />
+                    </div>
+                    <div className="text-sm text-gray-300">{achievement.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="flex gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-[#ff502b] hover:bg-[#ff6b41] px-8 py-4 rounded-lg font-bold transition-all duration-300"
+                  onClick={handleConsultationClick}
                 >
-                                    <div className="text-xs text-orange-400 mt-1">{achievement.sublabel}</div>
+                  無料相談を予約する
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-gray-700 hover:bg-gray-600 px-8 py-4 rounded-lg font-bold"
+                  onClick={handleConsultationClick}
+                >
+                  AIとチャットで相談する
+                </motion.button>
+              </div>
+            </motion.div>
 
-                  <div className="text-3xl font-bold text-orange-500">
-                    <AnimatedCounter
-                      from={0}
-                      to={achievement.number}
-                      suffix={achievement.suffix}
-                    />
-                  </div>
-                  <div className="text-sm text-gray-300">{achievement.label}</div>
-                </motion.div>
-              ))}
-            </div>
 
-            <div className="flex gap-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                className="bg-[#ff502b] hover:bg-[#ff6b41] px-8 py-4 rounded-lg font-bold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleConsultationClick}
-                disabled={isWidgetLoading}
-              >
-                {isWidgetLoading ? '読み込み中...' : '無料相談を予約する'}
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                className="bg-gray-700 hover:bg-gray-600 px-8 py-4 rounded-lg font-bold"
-                onClick={handleCaseStudyClick}
-              >
-                AIとチャットで相談する
-              </motion.button>
-            </div>
-          </motion.div>
+
 
           {/* 右側：Vimeo動画 */}
           <motion.div
@@ -243,26 +253,7 @@ export const Hero = () => {
         </div>
       </div>
     </section>
+    </>
   )
 }
-
-// TypeScript の型定義
-declare global {
-  interface Window {
-    MaterialUI: object;
-    emotionReact: object;
-    emotionStyled: object;
-    AIChatWidget: {
-      init: (config: {
-        clientId: string;
-        theme: {
-          primary: string;
-        };
-        displayMode: string;
-        container: string;
-      }) => void;
-    };
-  }
-}
-
 export default Hero

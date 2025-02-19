@@ -1,11 +1,22 @@
 'use client'
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { useWidgetLoader } from '@/hooks/useWidgetLoader'
 
 export const FloatingCTA = () => {
   const [isVisible, setIsVisible] = useState(false)
-  const { isWidgetLoading, loadWidget } = useWidgetLoader()
+  const [showWidget, setShowWidget] = useState(false)
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'WIDGET_TOGGLE') {
+        setShowWidget(event.data.payload.visible);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,12 +31,34 @@ export const FloatingCTA = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const handleClick = async () => {
-    await loadWidget()
+  const handleClick = () => {
+    setShowWidget(true)
   }
 
   return (
     <>
+      {showWidget && (
+        <iframe
+          src="https://aibookingbot-widget.web.app"
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            border: 'none',
+            width: '720px',
+            height: '540px',
+            maxWidth: '90vw',
+            maxHeight: '90vh',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            zIndex: 9999
+          }}
+          allow="microphone"
+          title="AI Chat Widget"
+        />
+      )}
+
       {isVisible && (
         <motion.div
           initial={{ y: 100, opacity: 0 }}
@@ -42,13 +75,10 @@ export const FloatingCTA = () => {
                 クリックしてチャットですぐに相談
               </p>
               <button 
-                className={`bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full transition-all ${
-                  isWidgetLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full transition-all"
                 onClick={handleClick}
-                disabled={isWidgetLoading}
               >
-                {isWidgetLoading ? '読み込み中...' : 'AIとチャットで相談する'}
+                AIとチャットで相談する
               </button>
             </div>
           </div>
