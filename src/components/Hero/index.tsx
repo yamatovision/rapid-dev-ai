@@ -63,14 +63,7 @@ export const Hero = () => {
     setShowWidget(true);
   };
 
-  const handleCaseStudyClick = () => {
-    window.dispatchEvent(new CustomEvent('switchContactTab', { 
-      detail: {
-        tab: 'document',
-        selectDocument: 'case-studies'
-      }
-    }))
-  }
+
 
   return (
     <>
