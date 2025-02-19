@@ -29,71 +29,50 @@ export const Hero = () => {
     }
   ]
 
-
-
-
   const handleConsultationClick = async () => {
     if (isWidgetLoading) return;
     setIsWidgetLoading(true);
-  
+    
     const loadScript = (src: string) => new Promise<void>((resolve, reject) => {
       const script = document.createElement('script');
       script.src = src;
-      script.async = false;  // 重要：非同期読み込みを無効化
-      script.defer = true;   // 追加：実行順序を保証
-      script.onload = () => {
-        console.log(`Loaded: ${src}`);
-        if (typeof window !== 'undefined') {
-          console.log('MaterialUI available:', typeof window.MaterialUI !== 'undefined');
-          console.log('emotionReact available:', typeof window.emotionReact !== 'undefined');
-          console.log('emotionStyled available:', typeof window.emotionStyled !== 'undefined');
-        }
-        resolve();
-      };
+      script.async = false;
+      script.defer = true;
+      script.onload = () => resolve();
       script.onerror = (e) => reject(e);
-      document.head.appendChild(script);  // bodyではなくheadに追加
+      document.head.appendChild(script);
     });
   
     try {
       // 依存関係を順番に読み込み
       const dependencies = [
-        'https://unpkg.com/react@18/umd/react.production.min.js',
-        'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-        'https://unpkg.com/@mui/material@5.15.14/umd/material-ui.production.min.js',
-        'https://unpkg.com/@emotion/react@11.11.3/dist/emotion-react.umd.min.js',
-        'https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js'
+        'https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js',
+        'https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js',
+        'https://cdn.jsdelivr.net/npm/@mui/material@5.15.14/umd/material-ui.production.min.js',
+        'https://cdn.jsdelivr.net/npm/@emotion/react@11.11.3/dist/emotion-react.umd.min.js',
+        'https://cdn.jsdelivr.net/npm/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js'
       ];
   
       for (const src of dependencies) {
         await loadScript(src);
       }
   
-      // グローバルオブジェクトの確認
-      console.log('Global MUI object:', Object.keys(window).filter(key => 
-        key.includes('Mui') || key.includes('material') || key.includes('Material')
-      ));
-      console.log('Global Emotion object:', Object.keys(window).filter(key => 
-        key.includes('emotion') || key.includes('Emotion')
-      ));
+      // 環境に応じたウィジェットURLの設定
+      const widgetUrl = process.env.NODE_ENV === 'development' 
+        ? 'http://localhost:5174/dist/index.umd.js'
+        : 'https://aibookingbot-widget.web.app/index.umd.js';
   
-      // ウィジェットの読み込み
-      await loadScript(process.env.NEXT_PUBLIC_WIDGET_URL || 'http://localhost:5174/dist/index.umd.js');
-      console.log('Widget script loaded, AIChatWidget object:', window.AIChatWidget);
-  
-      // 設定とウィジェットの初期化
-      const config = {
-        clientId: process.env.NEXT_PUBLIC_WIDGET_CLIENT_ID || 'YOUR_CLIENT_ID',
-        theme: {
-          primary: '#ff502b'
-        },
-        displayMode: 'modal',
-        container: `ai-chat-widget-container-${Math.random().toString(36).substr(2, 9)}`
-      };
-      console.log('Initializing widget with config:', config);
+      await loadScript(widgetUrl);
   
       if (window.AIChatWidget) {
-        window.AIChatWidget.init(config);
-        console.log('Widget initialized');
+        window.AIChatWidget.init({
+          clientId: process.env.NEXT_PUBLIC_WIDGET_CLIENT_ID || 'YOUR_CLIENT_ID',
+          theme: {
+            primary: '#ff502b'
+          },
+          displayMode: 'modal',
+          container: `ai-chat-widget-container-${Math.random().toString(36).substr(2, 9)}`
+        });
       }
     } catch (error) {
       console.error('Failed to load widget:', error);
