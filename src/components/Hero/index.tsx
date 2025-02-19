@@ -268,22 +268,22 @@ export const Hero = () => {
 }
 
 // TypeScript の型定義
-  declare global {
-    interface Window {
-      MaterialUI: any;
-      emotionReact: any;
-      emotionStyled: any;
-      AIChatWidget: {
-        init: (config: {
-          clientId: string;
-          theme: {
-            primary: string;
-          };
-          displayMode: string;
-          container: string;
-        }) => void;
-      };
-    }
+declare global {
+  interface Window {
+    MaterialUI: object;
+    emotionReact: object;
+    emotionStyled: object;
+    AIChatWidget: {
+      init: (config: {
+        clientId: string;
+        theme: {
+          primary: string;
+        };
+        displayMode: string;
+        container: string;
+      }) => void;
+    };
   }
+}
 
 export default Hero

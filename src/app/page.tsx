@@ -7,7 +7,6 @@ import { DevelopmentProcess } from '@/components/DevelopmentProcess'
 import { FloatingCTA } from '@/components/common/FloatingCTA'
 import { AIDevelopmentProof } from '@/components/AIDevelopmentProof'
 import { QualityAssurance } from '@/components/QualityAssurance'
-import { Vision } from '@/components/Vision'
 import { PainPoints } from '@/components/PainPoints'
 
 
