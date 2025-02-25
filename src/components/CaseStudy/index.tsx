@@ -21,7 +21,7 @@ export const CaseStudy = () => {
       image: "/case-study-3.png",
       period: {
         traditional: "4ヶ月",
-        actual: "10日"
+        actual: "7日"
       },
       description: `個別相談を完全自動化するための革新的なプラットフォームです。
         LPと自社の参考情報を入力するだけで、カスタマイズされた個別相談アシスタントを自動生成。
