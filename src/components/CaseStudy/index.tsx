@@ -57,12 +57,8 @@ export const CaseStudy = () => {
         通常なら数時間かかる情報収集と整理作業を、わずか数分で完了できる画期的なツールとして、
         マーケティング担当者や研究者から高い評価を得ています。`
     }
-  
-
-
-
-
   ]
+
   return (
     <section className="py-20 bg-gray-900 text-white">
       <div className="container mx-auto px-4">
@@ -86,12 +82,13 @@ export const CaseStudy = () => {
               className="bg-gray-800 rounded-xl shadow-xl overflow-hidden border border-gray-700 hover:border-orange-500/30 transition-all"
             >
               <div className="grid md:grid-cols-2 gap-8 p-8">
-                <div className="relative h-[400px]">
+                <div className="relative w-full aspect-[1351/882] md:aspect-[1351/882]">
                   <Image
                     src={case_study.image}
                     alt={case_study.title}
                     fill
-                    className="object-cover rounded-lg"
+                    className="object-contain md:object-cover rounded-lg"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
                 <div className="space-y-6">
